@@ -8,10 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -53,7 +57,11 @@ public class AuthService {
             if (username == null || username.isEmpty()) {
                 throw new RuntimeException("نام کاربری معتبر نیست و مقدار آن نال یا خالی است!");
             }
-            String jwt = jwtUtils.generateToken(username);
+            List<String> roles = authentication.getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+            String jwt = jwtUtils.generateToken(username,roles);
             System.out.println("🔑 مقدار JWT: " + jwt);
             System.out.println("🔥 در حال احراز هویت: " + loginRequest.getUsername());
             return ResponseEntity.ok(jwt);

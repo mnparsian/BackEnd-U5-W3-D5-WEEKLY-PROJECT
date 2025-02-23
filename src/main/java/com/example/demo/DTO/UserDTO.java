@@ -1,10 +1,14 @@
 package com.example.demo.DTO;
 
+import com.example.demo.Model.ERole;
 import com.example.demo.Model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class UserDTO {
@@ -20,5 +24,6 @@ public class UserDTO {
   private String password;
 
   @NotNull(message = "نقش کاربر باید مشخص شود")
-  private Role role;
+  private Set<String> roles = new HashSet<>();
+
 }

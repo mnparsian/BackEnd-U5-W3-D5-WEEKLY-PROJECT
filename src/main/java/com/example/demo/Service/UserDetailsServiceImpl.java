@@ -6,12 +6,14 @@ package com.example.demo.Service;
 import com.example.demo.Model.User;
 import com.example.demo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -33,10 +35,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("کاربر با نام کاربری " + username + " پیدا نشد");
         }
         System.out.println("🔍 رمز عبور هش‌شده در دیتابیس: " + user.get().getPassword());
+
+
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.get().getUsername())
                 .password(user.get().getPassword())
-                .roles(user.get().getRole().toString()) // مقداردهی صحیح نقش‌ها
+                .authorities(user.get().getRoles().stream()
+                        .peek(role -> System.out.println("🔍 Role Object: " + role))  // لاگ نقش قبل از تبدیل
+                        .map(role -> {
+                            System.out.println("🔍 Role Name: " + role.getName()); // لاگ گرفتن نام نقش
+                            return new SimpleGrantedAuthority(role.getName().name());
+                        })
+                        .collect(Collectors.toList()))
                 .build();
     }
 

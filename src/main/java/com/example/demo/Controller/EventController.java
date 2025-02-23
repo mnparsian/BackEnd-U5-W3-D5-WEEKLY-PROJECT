@@ -5,6 +5,7 @@ import com.example.demo.Model.Event;
 import com.example.demo.Service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,9 @@ public class EventController {
   }
 
   @PostMapping
+  @PreAuthorize("hasRole('ADMIN')")
   public Event createEvent(@Valid @RequestBody EventDTO eventDTO) {
     return eventService.createEvent(eventDTO);
   }
+
 }
